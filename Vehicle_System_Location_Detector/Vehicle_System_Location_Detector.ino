@@ -26,7 +26,36 @@ void setup() {
 void loop() {
   getLoc();
   geoDomain();
-  if(Serial2.available()>0){
+  processMessage()
+}
+void getLoc(){
+      while(gpsSerial.available()){
+      int data = gpsSerial.read();
+      if(gps.encode(data)){
+          latitude = gps.location.lat(); 
+          longitude = gps.location.lng();
+          Serial.print("latitude: "); 
+          Serial.println(latitude, 6); 
+          Serial.print("longitude: "); 
+          Serial.println(longitude, 6); 
+          
+        }
+    }
+    delay(500);
+}
+void geoDomain(){
+        if( latitude <= NWLat and latitude >= SWLat and longitude >= NWLng and longitude <= SELng ) {
+        Serial.print("Within geolocation domain");
+        delay(500); 
+      }
+    else{
+        Serial.print("out of geolocation domain");
+        delay(500); 
+      }
+   Serial.println();
+}
+void processMessage(){
+    if(Serial2.available()>0){
     textMessage = Serial2.readString();
    textMessage.toUpperCase();   
     delay(10);
@@ -71,31 +100,4 @@ void loop() {
       SELng = coordinate.toDouble();
       Serial.println("SMS SELN RECEIVED");
     }
-
-}
-void getLoc(){
-      while(gpsSerial.available()){
-      int data = gpsSerial.read();
-      if(gps.encode(data)){
-          latitude = gps.location.lat(); 
-          longitude = gps.location.lng();
-          Serial.print("latitude: "); 
-          Serial.println(latitude, 6); 
-          Serial.print("longitude: "); 
-          Serial.println(longitude, 6); 
-          
-        }
-    }
-    delay(500);
-}
-void geoDomain(){
-        if( latitude <= NWLat and latitude >= SWLat and longitude >= NWLng and longitude <= SELng ) {
-        Serial.print("Within geolocation domain");
-        delay(500); 
-      }
-    else{
-        Serial.print("out of geolocation domain");
-        delay(500); 
-      }
-   Serial.println();
-      } 
+} 
